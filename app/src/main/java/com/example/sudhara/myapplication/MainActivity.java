@@ -1,10 +1,13 @@
 package com.example.sudhara.myapplication;
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -15,16 +18,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebChromeClient;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+    private WebView view ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Adds Progrss bar Support
+        this.getWindow().requestFeature(Window.FEATURE_PROGRESS);
+        setContentView(R.layout.content_main );
+
+        // Makes Progress bar Visible
+        getWindow().setFeatureInt( Window.FEATURE_PROGRESS, Window.PROGRESS_VISIBILITY_ON);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -47,13 +60,36 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+
         String url = "http://lakwimana.com/" ; // Defining URL
         WebView view = (WebView) this .findViewById (R.id.webView);   // synchronization object based on the id
         WebSettings webSettings = view.getSettings();
         webSettings.setJavaScriptEnabled(true);
         view.loadUrl (url);    // URL that is currently open applications terload
+
+
         WebView myWebView = (WebView) findViewById(R.id.webView);
         myWebView.setWebViewClient(new WebViewClient());
+
+
+        // Sets the Chrome Client, and defines the onProgressChanged
+        // This makes the Progress bar be updated.
+        final Activity MyActivity = this;
+        view.setWebChromeClient(new WebChromeClient() {
+            public void onProgressChanged(WebView view, int progress)
+            {
+                //Make the bar disappear after URL is loaded, and changes string to Loading...
+                MyActivity.setTitle("Loading...");
+                MyActivity.setProgress(progress * 100); //Make the bar disappear after URL is loaded
+
+                // Return the app name after finish loading
+                if(progress == 100)
+                    MyActivity.setTitle(R.string.app_name);
+            }
+        });
+
+
     }
     private class MyWebViewClient extends WebViewClient {
         @Override
@@ -95,6 +131,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
             return true;
         }
 
@@ -105,18 +142,32 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        WebView view = (WebView) this .findViewById (R.id.webView);
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.nav_cart) {
+
+            view.loadUrl("https://lakwimana.com/shopping_cart.php");
+              // Handle the camera action
         } else if (id == R.id.nav_gallery) {
+            CharSequence colors[] = new CharSequence[] {"English", "Sinhala"};
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Pick a color");
+            builder.setItems(colors, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // the user clicked on colors[which]
+                }
+            });
+            builder.show();
 
         } else if (id == R.id.nav_slideshow) {
-
+            view.loadUrl("http://lakwimana.com/products_new.php");
         } else if (id == R.id.nav_manage) {
-
+            view.loadUrl("https://lakwimana.com/shopping_cart.php");
         } else if (id == R.id.nav_share) {
-
+            view.loadUrl("https://lakwimana.com/shopping_cart.php");
         } else if (id == R.id.nav_send) {
 
         }
