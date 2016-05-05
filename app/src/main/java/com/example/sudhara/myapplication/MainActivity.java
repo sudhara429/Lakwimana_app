@@ -66,11 +66,19 @@ public class MainActivity extends AppCompatActivity
         WebView view = (WebView) this .findViewById (R.id.webView);   // synchronization object based on the id
         WebSettings webSettings = view.getSettings();
         webSettings.setJavaScriptEnabled(true);
+
         view.loadUrl (url);    // URL that is currently open applications terload
 
 
         WebView myWebView = (WebView) findViewById(R.id.webView);
-        myWebView.setWebViewClient(new WebViewClient());
+        myWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                view.loadUrl("javascript:document.getElementsByTagName('html')              [0].innerHTML+='<style>.navbar{display: none}#bodyWrapper {margin-top: 2px}</style>';");
+
+            }
+
+        });
 
 
         // Sets the Chrome Client, and defines the onProgressChanged
@@ -86,11 +94,13 @@ public class MainActivity extends AppCompatActivity
                 // Return the app name after finish loading
                 if(progress == 100)
                     MyActivity.setTitle(R.string.app_name);
+
             }
         });
 
 
     }
+
     private class MyWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -143,20 +153,36 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         WebView view = (WebView) this .findViewById (R.id.webView);
+        final WebView view3=view;
         int id = item.getItemId();
 
         if (id == R.id.nav_cart) {
 
-            view.loadUrl("https://lakwimana.com/shopping_cart.php");
+            view.loadUrl("http://lakwimana.com/shopping_cart.php");
               // Handle the camera action
         } else if (id == R.id.nav_gallery) {
+
             CharSequence colors[] = new CharSequence[] {"English", "Sinhala"};
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Pick a color");
+            builder.setTitle("Pick a Language");
             builder.setItems(colors, new DialogInterface.OnClickListener() {
+
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+
+                    switch (which) {
+                        case 1:
+                            // int which = -2
+                            view3.loadUrl("http://www.lakwimana.com/index.php?language=si");
+                            dialog.dismiss();
+                            break;
+                        case 0:
+                            view3.loadUrl("http://www.lakwimana.com/index.php?language=en");
+                            // int which = -3
+                            dialog.dismiss();
+                            break;
+                    }
                     // the user clicked on colors[which]
                 }
             });
@@ -165,9 +191,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_slideshow) {
             view.loadUrl("http://lakwimana.com/products_new.php");
         } else if (id == R.id.nav_manage) {
-            view.loadUrl("https://lakwimana.com/shopping_cart.php");
+            view.loadUrl("http://lakwimana.com/shopping_cart.php");
         } else if (id == R.id.nav_share) {
-            view.loadUrl("https://lakwimana.com/shopping_cart.php");
+            view.loadUrl("http://lakwimana.com/shopping_cart.php");
         } else if (id == R.id.nav_send) {
 
         }
